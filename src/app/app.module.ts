@@ -16,11 +16,15 @@ import { LoggedInGuard } from './logged-in.guard';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { WelcomePleaseLoginComponent } from './welcome-please-login/welcome-please-login.component';
 import { WelcomeLoggedInComponent } from './welcome-logged-in/welcome-logged-in.component';
+import { RoleplayCharacterMapComponent } from './roleplayCharacterMap/roleplay-character-map/roleplay-character-map.component';
+import { GenerateNewRoleplayCharacterMapComponent } from './roleplayCharacterMap/generate-new-roleplay-character-map/generate-new-roleplay-character-map.component';
+
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'user', component: UserAreaComponent, canActivate: [LoggedInGuard] },
   { path: 'signup', component: SignUpComponent },
+  { path: 'character-map', component: RoleplayCharacterMapComponent, canActivate: [LoggedInGuard] },
   { path: '**', component: WelcomeComponent }
 ];
 
@@ -34,7 +38,9 @@ const appRoutes: Routes = [
     UserAreaComponent,
     SignUpComponent,
     WelcomePleaseLoginComponent,
-    WelcomeLoggedInComponent
+    WelcomeLoggedInComponent,
+    RoleplayCharacterMapComponent,
+    GenerateNewRoleplayCharacterMapComponent
   ],
   imports: [
     BrowserModule,
