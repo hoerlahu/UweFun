@@ -1,0 +1,13 @@
+<div *ngIf="isKnownIfLoggedIn">
+<div *ngIf="!isLoggedIn">
+  <app-welcome-please-login></app-welcome-please-login>
+</div>
+
+<div *ngIf="isLoggedIn">
+    <app-welcome-logged-in></app-welcome-logged-in>
+</div>
+</div>
+
+<div *ngIf="!isKnownIfLoggedIn">
+  loading ...
+</div>
