@@ -17,6 +17,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { WelcomePleaseLoginComponent } from './welcome-please-login/welcome-please-login.component';
 import { WelcomeLoggedInComponent } from './welcome-logged-in/welcome-logged-in.component';
 import { RoleplayCharacterMapComponent } from './roleplayCharacterMap/roleplay-character-map/roleplay-character-map.component';
+// tslint:disable-next-line:max-line-length
 import { GenerateNewRoleplayCharacterMapComponent } from './roleplayCharacterMap/generate-new-roleplay-character-map/generate-new-roleplay-character-map.component';
 
 

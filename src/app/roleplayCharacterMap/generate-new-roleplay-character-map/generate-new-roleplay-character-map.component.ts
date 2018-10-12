@@ -1,3 +1,4 @@
+import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit } from '@angular/core';
 import { PersistanceService } from 'src/app/persistance.service';
 
@@ -9,13 +10,16 @@ import { PersistanceService } from 'src/app/persistance.service';
 })
 export class GenerateNewRoleplayCharacterMapComponent implements OnInit {
 
-  constructor(private persistanceService : PersistanceService) { }
+  constructor(private characterMapService: CharacterMapService) { }
 
   ngOnInit() {
   }
 
-  onGenerateClicked(){
-    this.persistanceService.read();
+  onGenerateClicked() {
+    const inputElement = (<HTMLInputElement>document.getElementById('scenarioName'));
+    const scenarioName: string = inputElement.value;
+    inputElement.value = '';
+    this.characterMapService.createNewCharacterMap(scenarioName);
   }
 
 }
