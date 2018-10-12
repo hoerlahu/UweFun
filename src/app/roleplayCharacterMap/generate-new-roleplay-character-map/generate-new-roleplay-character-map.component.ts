@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PersistanceService } from 'src/app/persistance.service';
 
 
 @Component({
@@ -8,13 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GenerateNewRoleplayCharacterMapComponent implements OnInit {
 
-  constructor() { }
+  constructor(private persistanceService : PersistanceService) { }
 
   ngOnInit() {
   }
 
   onGenerateClicked(){
-    
+    this.persistanceService.read();
   }
 
 }
