@@ -1,0 +1,19 @@
+.container {
+    width: 100%;
+    height: 800px;
+    background: aqua;
+    margin: auto;
+}
+
+.leftDiv {
+    width: 20%;
+    height: 100%;
+    background: red;
+    float: left;
+}
+
+.rightDiv {
+    width: 80%;
+    height: 100%;
+    margin-left: 20%;
+}

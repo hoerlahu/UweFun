@@ -18,6 +18,7 @@ import { WelcomeLoggedInComponent } from './welcome-logged-in/welcome-logged-in.
 import { RoleplayCharacterMapComponent } from './roleplayCharacterMap/roleplay-character-map/roleplay-character-map.component';
 // tslint:disable-next-line:max-line-length
 import { GenerateNewRoleplayCharacterMapComponent } from './roleplayCharacterMap/generate-new-roleplay-character-map/generate-new-roleplay-character-map.component';
+import { MapDisplayComponent } from './roleplayCharacterMap/map-display/map-display.component';
 
 
 const appRoutes: Routes = [
@@ -40,7 +41,8 @@ const appRoutes: Routes = [
     WelcomePleaseLoginComponent,
     WelcomeLoggedInComponent,
     RoleplayCharacterMapComponent,
-    GenerateNewRoleplayCharacterMapComponent
+    GenerateNewRoleplayCharacterMapComponent,
+    MapDisplayComponent
   ],
   imports: [
     BrowserModule,
