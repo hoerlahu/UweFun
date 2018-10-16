@@ -19,13 +19,19 @@ import { RoleplayCharacterMapComponent } from './roleplayCharacterMap/roleplay-c
 // tslint:disable-next-line:max-line-length
 import { GenerateNewRoleplayCharacterMapComponent } from './roleplayCharacterMap/generate-new-roleplay-character-map/generate-new-roleplay-character-map.component';
 import { MapDisplayComponent } from './roleplayCharacterMap/map-display/map-display.component';
-
+import { QuillModule } from 'ngx-quill';
+import { EditCharacterMapComponent } from './roleplayCharacterMap/edit-character-map/edit-character-map.component';
+import { FormsModule } from '@angular/forms';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'user', component: UserAreaComponent, canActivate: [LoggedInGuard] },
   { path: 'signup', component: SignUpComponent },
   { path: 'character-map', component: RoleplayCharacterMapComponent, canActivate: [LoggedInGuard] },
+  { path: 'editCharacterMap',
+      children: [
+        {path: '**', component: EditCharacterMapComponent, canActivate: [LoggedInGuard]}
+    ], component: EditCharacterMapComponent, canActivate: [LoggedInGuard] },
   { path: '**', component: WelcomeComponent }
 ];
 
@@ -42,14 +48,17 @@ const appRoutes: Routes = [
     WelcomeLoggedInComponent,
     RoleplayCharacterMapComponent,
     GenerateNewRoleplayCharacterMapComponent,
-    MapDisplayComponent
+    MapDisplayComponent,
+    EditCharacterMapComponent
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(appRoutes),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule, // for database
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    QuillModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
