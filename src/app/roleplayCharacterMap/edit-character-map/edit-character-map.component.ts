@@ -1,3 +1,4 @@
+import { CharacterMap } from './../CharacterMap';
 import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit } from '@angular/core';
 
@@ -29,17 +30,27 @@ Quill.register(Font, true);
 })
 export class EditCharacterMapComponent implements OnInit {
 
-  description: string;
+  charMap: CharacterMap = new CharacterMap();
 
-  constructor(private characterMapService: CharacterMapService,
+  constructor(private charMapService: CharacterMapService,
               private router: Router) {
   }
 
   ngOnInit() {
+    const arr = this.router.url.split('/');
+    this.charMapService.getMap(arr[arr.length - 1]).then(
+      (resolve) => {
+        this.charMap = resolve;
+      });
+
+    this.charMapService.getMapObservable(arr[arr.length - 1]).subscribe(
+      { next: (next) => { this.charMap = next; } }
+    );
   }
 
   onSave() {
-    console.log(this.description);
+    this.charMapService.updateCharMap(this.charMap);
+    this.charMapService.persistMaps();
   }
 
 }

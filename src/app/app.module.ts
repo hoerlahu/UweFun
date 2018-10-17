@@ -23,6 +23,9 @@ import { QuillModule } from 'ngx-quill';
 import { EditCharacterMapComponent } from './roleplayCharacterMap/edit-character-map/edit-character-map.component';
 import { FormsModule } from '@angular/forms';
 import { CharacterComponent } from './roleplayCharacterMap/character/character.component';
+import { CityComponent } from './roleplayCharacterMap/city/city.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -51,7 +54,8 @@ const appRoutes: Routes = [
     GenerateNewRoleplayCharacterMapComponent,
     MapDisplayComponent,
     EditCharacterMapComponent,
-    CharacterComponent
+    CharacterComponent,
+    CityComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +64,8 @@ const appRoutes: Routes = [
     AngularFireDatabaseModule, // for database
     AngularFireAuthModule,
     QuillModule,
-    FormsModule
+    FormsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

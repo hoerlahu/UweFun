@@ -5,17 +5,32 @@
 
 
 <div *ngIf="character">
-    <div *ngIf="newCharacter == false; else enterCharName">
-      <p>
-        Name: {{character.name}}
-      </p>
-    </div>
+  <div *ngIf="newCharacter == false; else enterCharName">
+    <p>
+      Name: {{character.name}}
+    </p>
+  </div>
 
-    <ng-template #enterCharName>
-        Name: <input type="text" [(ngModel)]="character.name">
-    </ng-template>
-    <br>
-    Description: <input [(ngModel)]="character.description"> 
+  <ng-template #enterCharName>
+    <div>
+      Name: <input type="text" [(ngModel)]="character.name">
+    </div>
+  </ng-template>
+
+
+  <div class="row">
+    <div class="col">
+      <div ngbDropdown class="d-inline-block">
+        City: {{character.inCityWithName}} <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button *ngFor="let city of charMap.cities" class="dropdown-item" (click)="onCityWithNamePicked(city.name)">{{city.name}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    Description: <input [(ngModel)]="character.description">
     <br>
     <button (click)="onCharacterSave()">save Character</button>
+  </div>
 </div>

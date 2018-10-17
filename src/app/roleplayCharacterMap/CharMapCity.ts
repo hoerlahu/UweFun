@@ -1,3 +1,4 @@
 export class CharMapCity {
-    cityName: string;
+    name: string;
+    description: string;
 }

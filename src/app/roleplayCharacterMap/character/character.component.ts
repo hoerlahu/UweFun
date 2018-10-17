@@ -16,14 +16,22 @@ export class CharacterComponent implements OnInit {
   character: CharMapCharacter;
 
   constructor(private charMapService: CharacterMapService,
-              private router: Router) { }
+    private router: Router) { }
 
   ngOnInit() {
     const arr = this.router.url.split('/');
-    this.charMapService.getMap(arr[arr.length - 1 ]).then(
+    this.charMapService.getMap(arr[arr.length - 1]).then(
       (resolve) => {
         this.charMap = resolve;
       });
+
+    this.charMapService.getMapObservable(arr[arr.length - 1]).subscribe(
+      { next: (next) => { this.charMap = next; } }
+    );
+  }
+
+  onCityWithNamePicked(name: string) {
+    this.character.inCityWithName = name;
   }
 
   onCharacterEdit(character: CharMapCharacter) {
@@ -50,7 +58,7 @@ export class CharacterComponent implements OnInit {
 
     this.charMap.characters.push(this.character);
 
-    this.charMapService.saveCharMap(this.charMap);
+    this.charMapService.updateCharMap(this.charMap);
 
     this.character = null;
   }

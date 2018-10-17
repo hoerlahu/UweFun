@@ -3,8 +3,9 @@
 <br>
 <h2>Description</h2>
 
-<quill-editor [(ngModel)]="description" ></quill-editor>
+<quill-editor [(ngModel)]="charMap.description" ></quill-editor>
 
 <app-character></app-character>
+<app-city></app-city>
 
 <button (click)="onSave()">Save</button>

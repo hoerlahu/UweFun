@@ -35,7 +35,6 @@ export class CharacterMapService {
   }
 
   private propagateChangeInCharMaps() {
-    this.persistanceService.write('scenario', JSON.stringify(this.existingCharacterMaps));
     this.existingCharacterMapsSubject.next(this.existingCharacterMaps);
   }
 
@@ -67,7 +66,7 @@ export class CharacterMapService {
     }
   }
 
-  saveCharMap(charMap: CharacterMap) {
+  updateCharMap(charMap: CharacterMap) {
     let indexToRemove = -1;
     this.existingCharacterMaps.forEach(cm => {
       if (cm.charMapName === charMap.charMapName) {
@@ -79,7 +78,10 @@ export class CharacterMapService {
     this.existingCharacterMaps.push(charMap);
 
     this.propagateChangeInCharMaps();
+  }
 
+  persistMaps() {
+    this.persistanceService.write('scenario', JSON.stringify(this.existingCharacterMaps));
   }
 
   getMap(mapName: string): Promise<CharacterMap> {
@@ -89,6 +91,20 @@ export class CharacterMapService {
           result.forEach(each => {
             if (mapName === each.charMapName) {
               resolve(each);
+            }
+          });
+        }
+      );
+    });
+  }
+
+  getMapObservable(mapName: string): Observable<CharacterMap> {
+    return new Observable<CharacterMap>((subscriber) => {
+      this.getExistingCharacterMapsObservable().subscribe(
+        result => {
+          result.forEach(each => {
+            if (mapName === each.charMapName) {
+              subscriber.next(each);
             }
           });
         }

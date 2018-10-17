@@ -1,0 +1,21 @@
+<ul>
+    <li *ngFor="let city of charMap.cities" (click)="onCityEdit(city)">{{city.name}}</li>
+    <li class="createNew" (click)="onNewCity()">create new City</li>
+  </ul>
+  
+  
+  <div *ngIf="city">
+      <div *ngIf="newCity == false; else enterCityName">
+        <p>
+          Name: {{city.name}}
+        </p>
+      </div>
+  
+      <ng-template #enterCityName>
+          Name: <input type="text" [(ngModel)]="city.name">
+      </ng-template>
+      <br>
+      Description: <input [(ngModel)]="city.description"> 
+      <br>
+      <button (click)="onCitySave()">save City</button>
+  </div>
