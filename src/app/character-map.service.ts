@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { CharacterMap } from './roleplayCharacterMap/CharacterMap';
+import { Injectable, NgZone } from '@angular/core';
 import { PersistanceService } from './persistance.service';
 import { Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
@@ -8,39 +9,54 @@ import { Router } from '@angular/router';
 })
 export class CharacterMapService {
 
-  existingCharacterMaps: Array<string> = new Array<string>();
-  existingCharacterMapsSubject: Subject<Array<string>> = new Subject<Array<string>>();
+  existingCharacterMaps: Array<CharacterMap>;
+  existingCharacterMapsSubject: Subject<Array<CharacterMap>> = new Subject<Array<CharacterMap>>();
+  currentlyEditedCharacterMap: CharacterMap;
 
   constructor(private persistanceService: PersistanceService,
-              private router: Router) {
+              private router: Router,
+              private ngZone: NgZone) {
     this.persistanceService.read('scenario', (dataSnapshot) => {
       this.existingCharacterMaps = JSON.parse(dataSnapshot);
       if (!this.existingCharacterMaps) {
-        this.existingCharacterMaps = new Array<string>();
+        this.existingCharacterMaps = new Array<CharacterMap>();
       }
       this.existingCharacterMapsSubject.next(this.existingCharacterMaps);
     });
   }
 
   createNewCharacterMap(charmapName: string) {
-    this.existingCharacterMaps.push('{scenarioName : %1}'.replace(/%1/, charmapName));
-    this.persistanceService.write('scenario', JSON.stringify(this.existingCharacterMaps));
-    this.existingCharacterMapsSubject.next(this.existingCharacterMaps);
+    const charMap = new CharacterMap();
+    charMap.charMapName = charmapName;
+    this.existingCharacterMaps.push(charMap);
+    this.propagateChangeInCharMaps();
 
-    this.router.navigate(['/editCharacterMap', charmapName]);
+    this.editCharacterMap(charMap);
   }
 
-  getExistingCharacterMapsObservable(): Subject<Array<String>> {
+  private propagateChangeInCharMaps() {
+    this.persistanceService.write('scenario', JSON.stringify(this.existingCharacterMaps));
+    this.existingCharacterMapsSubject.next(this.existingCharacterMaps);
+  }
+
+  editCharacterMap(charmap: CharacterMap) {
+    this.currentlyEditedCharacterMap = charmap;
+    this.ngZone.run(() => {
+      this.router.navigate(['/editCharacterMap', charmap.charMapName]);
+    });
+  }
+
+  getExistingCharacterMapsObservable(): Subject<Array<CharacterMap>> {
     return this.existingCharacterMapsSubject;
   }
 
-  getExistingCharacterMaps(): Promise<Array<string>> {
+  getExistingCharacterMaps(): Promise<Array<CharacterMap>> {
     if (this.existingCharacterMaps) {
-      return new Promise<Array<string>>((resolve) => {
+      return new Promise<Array<CharacterMap>>((resolve) => {
         resolve(this.existingCharacterMaps);
       });
     } else {
-      return new Promise<Array<string>>((resolve) => {
+      return new Promise<Array<CharacterMap>>((resolve) => {
         this.persistanceService.read('scenario', (dataSnapshot) => {
           this.existingCharacterMaps = JSON.parse(dataSnapshot);
           this.existingCharacterMapsSubject.next(this.existingCharacterMaps);
@@ -50,4 +66,34 @@ export class CharacterMapService {
       );
     }
   }
+
+  saveCharMap(charMap: CharacterMap) {
+    let indexToRemove = -1;
+    this.existingCharacterMaps.forEach(cm => {
+      if (cm.charMapName === charMap.charMapName) {
+        indexToRemove = this.existingCharacterMaps.indexOf(charMap);
+      }
+    });
+
+    this.existingCharacterMaps.splice(indexToRemove);
+    this.existingCharacterMaps.push(charMap);
+
+    this.propagateChangeInCharMaps();
+
+  }
+
+  getMap(mapName: string): Promise<CharacterMap> {
+    return new Promise<CharacterMap>((resolve) => {
+      this.getExistingCharacterMaps().then(
+        result => {
+          result.forEach(each => {
+            if (mapName === each.charMapName) {
+              resolve(each);
+            }
+          });
+        }
+      );
+    });
+  }
+
 }

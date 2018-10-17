@@ -1,8 +1,10 @@
+import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit } from '@angular/core';
 
 import { QuillEditorComponent } from 'ngx-quill';
 
 import Quill from 'quill';
+import { Router } from '@angular/router';
 
 
 
@@ -29,7 +31,9 @@ export class EditCharacterMapComponent implements OnInit {
 
   description: string;
 
-  constructor() { }
+  constructor(private characterMapService: CharacterMapService,
+              private router: Router) {
+  }
 
   ngOnInit() {
   }

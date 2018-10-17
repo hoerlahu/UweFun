@@ -1,0 +1,21 @@
+<ul>
+  <li *ngFor="let character of charMap.characters" (click)="onCharacterEdit(character)">{{character.name}}</li>
+  <li class="createNew" (click)="onNewCharacter()">create new Character</li>
+</ul>
+
+
+<div *ngIf="character">
+    <div *ngIf="newCharacter == false; else enterCharName">
+      <p>
+        Name: {{character.name}}
+      </p>
+    </div>
+
+    <ng-template #enterCharName>
+        Name: <input type="text" [(ngModel)]="character.name">
+    </ng-template>
+    <br>
+    Description: <input [(ngModel)]="character.description"> 
+    <br>
+    <button (click)="onCharacterSave()">save Character</button>
+</div>

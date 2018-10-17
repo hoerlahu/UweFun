@@ -17,7 +17,6 @@ export class MapDisplayComponent implements OnInit {
     this.canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
     const parent = this.canvas.parentElement.parentElement;
 
-    console.log(parent);
     this.canvas.height = parent.offsetHeight;
     this.canvas.width = parent.offsetWidth;
 
@@ -34,7 +33,6 @@ export class MapDisplayComponent implements OnInit {
   @HostListener('mousemove', ['$event'])
   onClick(event) {
     if (this.mouseCurrentlyDown) {
-      console.log(event);
     }
   }
 

@@ -2,6 +2,9 @@
 <h1>Edit your Character Map here</h1>
 <br>
 <h2>Description</h2>
+
 <quill-editor [(ngModel)]="description" ></quill-editor>
+
+<app-character></app-character>
 
 <button (click)="onSave()">Save</button>

@@ -1,6 +1,6 @@
 import { CharacterMapService } from './../../character-map.service';
-import { PersistanceService } from 'src/app/persistance.service';
-import { Component, OnInit, OnChanges, SimpleChanges, ApplicationRef } from '@angular/core';
+import { Component, OnInit, ApplicationRef } from '@angular/core';
+import { CharacterMap } from '../CharacterMap';
 
 @Component({
   selector: 'app-roleplay-character-map',
@@ -9,7 +9,7 @@ import { Component, OnInit, OnChanges, SimpleChanges, ApplicationRef } from '@an
 })
 export class RoleplayCharacterMapComponent implements OnInit {
 
-  currentMaps: Array<string> = new Array<string>();
+  currentMaps: Array<CharacterMap> = new Array<CharacterMap>();
 
   constructor(private charMapService: CharacterMapService, private appRef: ApplicationRef) {
   }
@@ -25,6 +25,10 @@ export class RoleplayCharacterMapComponent implements OnInit {
         this.appRef.tick();
       }
     );
+  }
+
+  onEdit(characterMap) {
+    this.charMapService.editCharacterMap(characterMap);
   }
 
   onClick() {

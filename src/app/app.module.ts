@@ -22,6 +22,7 @@ import { MapDisplayComponent } from './roleplayCharacterMap/map-display/map-disp
 import { QuillModule } from 'ngx-quill';
 import { EditCharacterMapComponent } from './roleplayCharacterMap/edit-character-map/edit-character-map.component';
 import { FormsModule } from '@angular/forms';
+import { CharacterComponent } from './roleplayCharacterMap/character/character.component';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -49,7 +50,8 @@ const appRoutes: Routes = [
     RoleplayCharacterMapComponent,
     GenerateNewRoleplayCharacterMapComponent,
     MapDisplayComponent,
-    EditCharacterMapComponent
+    EditCharacterMapComponent,
+    CharacterComponent
   ],
   imports: [
     BrowserModule,

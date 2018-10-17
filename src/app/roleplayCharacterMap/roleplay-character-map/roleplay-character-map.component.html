@@ -1,5 +1,5 @@
 <ul>
-    <li *ngFor="let currentMap of currentMaps">{{currentMap}}</li>
+    <li *ngFor="let currentMap of currentMaps" (click)="onEdit(currentMap)">{{currentMap.charMapName}}</li>
 </ul>
 <button (click)="onClick()">click</button>
 <app-generate-new-roleplay-character-map></app-generate-new-roleplay-character-map>
