@@ -6,6 +6,7 @@ export class CharacterMap {
     charMapName: string;
     characters: Array<CharMapCharacter>;
     cities: Array<CharMapCity>;
+    description: string;
 
     constructor() {
         this.characters = new Array<CharMapCharacter>();
