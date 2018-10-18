@@ -1,3 +1,4 @@
+import { RedrawService } from './../../redraw.service';
 import { CharacterMap } from './../CharacterMap';
 import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit } from '@angular/core';
@@ -33,24 +34,38 @@ export class EditCharacterMapComponent implements OnInit {
   charMap: CharacterMap = new CharacterMap();
 
   constructor(private charMapService: CharacterMapService,
-              private router: Router) {
+    private router: Router,
+    private redrawService: RedrawService) {
   }
 
   ngOnInit() {
-    const arr = this.router.url.split('/');
-    this.charMapService.getMap(arr[arr.length - 1]).then(
+    this.charMapService.getCurrentMap().then(
       (resolve) => {
         this.charMap = resolve;
+        this.redraw();
       });
 
-    this.charMapService.getMapObservable(arr[arr.length - 1]).subscribe(
-      { next: (next) => { this.charMap = next; } }
+    this.charMapService.getCurrentMapObserable().subscribe(
+      {
+        next: (next) => {
+          this.charMap = next;
+          this.redraw();
+        }
+      }
     );
+  }
+
+  onPropertyChanged() {
+    this.charMapService.updateCharMap(this.charMap);
   }
 
   onSave() {
     this.charMapService.updateCharMap(this.charMap);
     this.charMapService.persistMaps();
+  }
+
+  redraw() {
+    this.redrawService.redraw();
   }
 
 }

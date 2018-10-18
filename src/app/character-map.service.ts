@@ -9,9 +9,9 @@ import { Router } from '@angular/router';
 })
 export class CharacterMapService {
 
-  existingCharacterMaps: Array<CharacterMap>;
+  existingCharacterMaps: Array<CharacterMap> = new Array<CharacterMap>();
   existingCharacterMapsSubject: Subject<Array<CharacterMap>> = new Subject<Array<CharacterMap>>();
-  currentlyEditedCharacterMap: CharacterMap;
+
 
   constructor(private persistanceService: PersistanceService,
               private router: Router,
@@ -23,6 +23,16 @@ export class CharacterMapService {
       }
       this.existingCharacterMapsSubject.next(this.existingCharacterMaps);
     });
+  }
+
+  getCurrentMapObserable(): Observable<CharacterMap> {
+    const arr = this.router.url.split('/');
+    return this.getMapObservable(arr[arr.length - 1]);
+  }
+
+  getCurrentMap(): Promise<CharacterMap> {
+    const arr = this.router.url.split('/');
+    return this.getMap(arr[arr.length - 1]);
   }
 
   createNewCharacterMap(charmapName: string) {
@@ -39,7 +49,6 @@ export class CharacterMapService {
   }
 
   editCharacterMap(charmap: CharacterMap) {
-    this.currentlyEditedCharacterMap = charmap;
     this.ngZone.run(() => {
       this.router.navigate(['/editCharacterMap', charmap.charMapName]);
     });
@@ -111,5 +120,4 @@ export class CharacterMapService {
       );
     });
   }
-
 }

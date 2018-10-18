@@ -35,8 +35,12 @@ export class CharacterComponent implements OnInit {
   }
 
   onCharacterEdit(character: CharMapCharacter) {
-    this.character = character;
-    this.newCharacter = character.name == null;
+    if (this.character && this.character === character) {
+      this.character = null;
+    } else {
+      this.character = character;
+      this.newCharacter = character.name == null;
+    }
   }
 
   onNewCharacter() {

@@ -1,11 +1,21 @@
-
 <h1>Edit your Character Map here</h1>
 <br>
 <h2>Description</h2>
 
-<quill-editor [(ngModel)]="charMap.description" ></quill-editor>
+<quill-editor (ngModelChange)="onPropertyChanged()" [(ngModel)]="charMap.description"></quill-editor>
+<br>
+Url of Map Image: <input type="text" (change)="onPropertyChanged()" [(ngModel)]="charMap.mapImage">
 
 <app-character></app-character>
 <app-city></app-city>
+
+<section class="container">
+    <div class="leftDiv">
+        <p>placeholder</p>
+    </div>
+    <div class="rightDiv">
+        <app-map-display></app-map-display>
+    </div>
+</section>
 
 <button (click)="onSave()">Save</button>

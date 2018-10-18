@@ -27,12 +27,8 @@ export class RoleplayCharacterMapComponent implements OnInit {
     );
   }
 
-  onEdit(characterMap) {
+  onMapClick(characterMap: CharacterMap) {
     this.charMapService.editCharacterMap(characterMap);
-  }
-
-  onClick() {
-    console.log(this.currentMaps);
   }
 
 }

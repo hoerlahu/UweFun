@@ -1,4 +1,6 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { CharacterMap } from './../CharacterMap';
+import { CharacterMapService } from './../../character-map.service';
+import { Component, OnInit, HostListener, ApplicationRef } from '@angular/core';
 
 @Component({
   selector: 'app-map-display',
@@ -8,23 +10,33 @@ import { Component, OnInit, HostListener } from '@angular/core';
 export class MapDisplayComponent implements OnInit {
   mouseCurrentlyDown: boolean;
   canvas: HTMLCanvasElement;
-  constructor() { }
+
+  currentCharMap: CharacterMap = new CharacterMap();
+
+  constructor(private characterMapService: CharacterMapService) { }
 
   ngOnInit() {
-    const height = window.innerHeight;
-    const width = window.innerWidth;
+    this.initializeCanvas();
+    this.fetchCharMap();
+  }
 
-    this.canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
-    const parent = this.canvas.parentElement.parentElement;
+  private fetchCharMap() {
+    this.characterMapService.getCurrentMap().then((charMap) => {
+      this.currentCharMap = charMap;
+      this.updateCanvas();
+    });
+    this.characterMapService.getCurrentMapObserable().subscribe({
+      next: (newCharMap) => {
+        this.currentCharMap = newCharMap;
+        this.updateCanvas();
+      }
+    });
+  }
 
-    this.canvas.height = parent.offsetHeight;
-    this.canvas.width = parent.offsetWidth;
-
+  updateCanvas(): void {
     const context = this.canvas.getContext('2d');
     const image = new Image();
-    image.src = 'https://cdn1.iconfinder.com/data/icons/ninja-things-1/1772/ninja-simple-512.png';
-    image.height = 100;
-    image.width = 100;
+    image.src = this.currentCharMap.mapImage;
     image.onload = () => {
       context.drawImage(image, 0, 0);
     };
@@ -44,6 +56,16 @@ export class MapDisplayComponent implements OnInit {
   @HostListener('mouseup')
   onMouseUp(event) {
     this.mouseCurrentlyDown = false;
+  }
+
+  initializeCanvas() {
+    this.canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
+    const parent = this.canvas.parentElement.parentElement;
+
+    this.canvas.height = parent.offsetHeight;
+    this.canvas.width = parent.offsetWidth;
+
+    this.updateCanvas();
   }
 
 }
