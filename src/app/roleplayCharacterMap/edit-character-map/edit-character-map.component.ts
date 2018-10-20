@@ -7,6 +7,7 @@ import { QuillEditorComponent } from 'ngx-quill';
 
 import Quill from 'quill';
 import { Router } from '@angular/router';
+import { ShouldEditCharMapService } from '../should-edit-char-map.service';
 
 
 
@@ -32,16 +33,19 @@ Quill.register(Font, true);
 export class EditCharacterMapComponent implements OnInit {
 
   charMap: CharacterMap = new CharacterMap();
+  isEditable: boolean;
 
   constructor(private charMapService: CharacterMapService,
     private router: Router,
-    private redrawService: RedrawService) {
+    private redrawService: RedrawService,
+    private shouldEditService: ShouldEditCharMapService) {
   }
 
   ngOnInit() {
     this.charMapService.getCurrentMap().then(
       (resolve) => {
         this.charMap = resolve;
+        console.log(this.charMap.description);
         this.redraw();
       });
 
@@ -49,10 +53,17 @@ export class EditCharacterMapComponent implements OnInit {
       {
         next: (next) => {
           this.charMap = next;
+          console.log(this.charMap.description);
           this.redraw();
         }
       }
     );
+
+    this.isEditable = this.shouldEditService.getInEditMode();
+    this.shouldEditService.getIsInEditModeSubject().subscribe((shouldEdit) => {
+      this.isEditable = shouldEdit;
+    });
+
   }
 
   onPropertyChanged() {
@@ -66,6 +77,10 @@ export class EditCharacterMapComponent implements OnInit {
 
   redraw() {
     this.redrawService.redraw();
+  }
+
+  onEditClicked(){
+    this.shouldEditService.setInEditMode(true);
   }
 
 }

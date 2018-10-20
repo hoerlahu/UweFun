@@ -1,8 +1,9 @@
+<div *ngIf="isEditable; else displayMode">
 <h1>Edit your Character Map here</h1>
 <br>
 <h2>Description</h2>
 
-<quill-editor (ngModelChange)="onPropertyChanged()" [(ngModel)]="charMap.description"></quill-editor>
+<quill-editor id="description-editor" (ngModelChange)="onPropertyChanged()" [(ngModel)]="charMap.description"></quill-editor>
 <br>
 Url of Map Image: <input type="text" (change)="onPropertyChanged()" [(ngModel)]="charMap.mapImage">
 
@@ -19,3 +20,25 @@ Url of Map Image: <input type="text" (change)="onPropertyChanged()" [(ngModel)]=
 </section>
 
 <button (click)="onSave()">Save</button>
+</div>
+
+<ng-template #displayMode>
+<h1>Have a look at your Character Map here</h1>
+<button (click)="onEditClicked()">Edit</button>
+
+<h2>Description</h2>
+<p [innerHTML]="charMap.description"></p>
+
+<section class="container">
+    <div class="leftDiv">
+        <p>placeholder</p>
+    </div>
+    <div class="rightDiv">
+        <app-map-display></app-map-display>
+    </div>
+</section>
+
+<app-character></app-character>
+<app-city></app-city>
+
+</ng-template>
