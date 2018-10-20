@@ -3,6 +3,7 @@ import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit } from '@angular/core';
 import { CharacterMap } from '../CharacterMap';
 import { Router } from '@angular/router';
+import { ShouldEditCharMapService } from '../should-edit-char-map.service';
 
 @Component({
   selector: 'app-character',
@@ -14,9 +15,11 @@ export class CharacterComponent implements OnInit {
   charMap: CharacterMap = new CharacterMap();
   newCharacter = false;
   character: CharMapCharacter;
+  isEditable: boolean;
 
   constructor(private charMapService: CharacterMapService,
-    private router: Router) { }
+    private router: Router,
+    private shouldEditService: ShouldEditCharMapService) { }
 
   ngOnInit() {
     const arr = this.router.url.split('/');
@@ -28,6 +31,11 @@ export class CharacterComponent implements OnInit {
     this.charMapService.getMapObservable(arr[arr.length - 1]).subscribe(
       { next: (next) => { this.charMap = next; } }
     );
+
+    this.isEditable = this.shouldEditService.getInEditMode();
+    this.shouldEditService.getIsInEditModeSubject().subscribe((shouldEdit) => {
+      this.isEditable = shouldEdit;
+    });
   }
 
   onCityWithNamePicked(name: string) {
