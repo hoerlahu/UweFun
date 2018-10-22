@@ -40,20 +40,6 @@ export class MapDisplayComponent implements OnInit {
     this.hideContextMenu();
   }
 
-  hideContextMenu() {
-    this.contextMenu.setAttribute('style', 'position: absolute; left: -9999px');
-    this.mapPositionDuringRightClick.x = 0;
-    this.mapPositionDuringRightClick.y = 0;
-  }
-
-  showContextMenu(event: MouseEvent) {
-    this.contextMenu.setAttribute('style', 'position: fixed; left: ' + event.x + 'px; top: ' + event.y + 'px;');
-    this.mapPositionDuringRightClick = this.canvasContents[0];
-    const rect = this.canvas.getBoundingClientRect();
-    this.rightClickPosition.x = event.x - rect.left;
-    this.rightClickPosition.y = event.y - rect.top;
-  }
-
   private overrideRightClick() {
     this.canvas.oncontextmenu = (ev: MouseEvent) => {
       ev.preventDefault();
@@ -88,7 +74,7 @@ export class MapDisplayComponent implements OnInit {
   updateCanvas(): void {
     const context = this.canvas.getContext('2d');
     this.canvasContents.forEach((each) => {
-      context.drawImage(each.image, each.x, each.y);
+      context.drawImage(each.image, each.x, each.y, each.width, each.height);
     });
   }
 
@@ -148,7 +134,6 @@ export class MapDisplayComponent implements OnInit {
   }
 
   addCharMapImages(): any {
-
     this.addBackgroundImage();
   }
 
@@ -174,23 +159,54 @@ export class MapDisplayComponent implements OnInit {
     cityIcon.src = 'https://image.flaticon.com/icons/svg/67/67347.svg';
 
     const cityCanvasContent = {
-      x: this.mapPositionDuringRightClick.x + this.rightClickPosition.x,
-      y: this.mapPositionDuringRightClick.y + this.rightClickPosition.y,
+      x: this.rightClickPosition.x - this.mapPositionDuringRightClick.x - CITY_ICON_WIDTH / 2,
+      y: this.rightClickPosition.y - this.mapPositionDuringRightClick.y - CITY_ICON_HEIGHT,
       image: cityIcon,
       height: CITY_ICON_HEIGHT,
       width: CITY_ICON_WIDTH,
       cityName: city.name
     };
 
+    this.removeCityIconIfExists(city.name);
+
     this.canvasContents.push(
       cityCanvasContent
     );
 
     cityIcon.onload = () => {
-      this.canvas.getContext('2d').drawImage(cityIcon, cityCanvasContent.x - cityCanvasContent.width / 2, cityCanvasContent.y - cityCanvasContent.height, CITY_ICON_WIDTH, CITY_ICON_HEIGHT);
+      this.updateCanvas();
     };
 
     this.hideContextMenu();
+  }
+
+  removeCityIconIfExists(name: string): void {
+    
+    let remove;
+
+    this.canvasContents.forEach((each) => {
+      if (each.cityName == name) {
+        remove = each;
+      }
+    });
+
+    if( remove ) {
+      this.canvasContents.splice(this.canvasContents.indexOf(remove));
+    }
+  }
+
+  hideContextMenu() {
+    this.contextMenu.setAttribute('style', 'position: absolute; left: -9999px');
+    this.mapPositionDuringRightClick.x = 0;
+    this.mapPositionDuringRightClick.y = 0;
+  }
+
+  showContextMenu(event: MouseEvent) {
+    this.contextMenu.setAttribute('style', 'position: fixed; left: ' + event.x + 'px; top: ' + event.y + 'px;');
+    this.mapPositionDuringRightClick = this.canvasContents[0];
+    const rect = this.canvas.getBoundingClientRect();
+    this.rightClickPosition.x = event.x - rect.left;
+    this.rightClickPosition.y = event.y - rect.top;
   }
 
 }
