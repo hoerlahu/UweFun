@@ -3,9 +3,10 @@ import { CharacterMap } from './../CharacterMap';
 import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit, HostListener, ApplicationRef } from '@angular/core';
 import { CharMapCity } from '../CharMapCity';
+import { MapDrawable } from './MapDrawable';
 
-const CITY_ICON_HEIGHT = 2;
-const CITY_ICON_WIDTH = 2;
+const CITY_ICON_HEIGHT = 100;
+const CITY_ICON_WIDTH = 100;
 
 @Component({
   selector: 'app-map-display',
@@ -20,7 +21,7 @@ export class MapDisplayComponent implements OnInit {
 
   currentCharMap: CharacterMap = new CharacterMap();
 
-  canvasContents: Array<{ x: number, y: number, image: HTMLImageElement }> = new Array<{ x: number, y: number, image: HTMLImageElement }>();
+  canvasContents: Array<MapDrawable> = new Array<MapDrawable>();
   lastMousePosition: { x: number, y: number } = { x: 0, y: 0 };
 
   mapPositionDuringRightClick: { x: number, y: number } = { x: 0, y: 0 };
@@ -63,7 +64,7 @@ export class MapDisplayComponent implements OnInit {
   private fetchCharMap() {
     this.characterMapService.getCurrentMap().then((charMap) => {
       this.currentCharMap = charMap;
-      this.canvasContents = new Array<{ x: number, y: number, image: HTMLImageElement }>();
+      this.canvasContents = new Array<MapDrawable>();
       this.cleanCanvas();
       this.addCharMapImages();
       this.updateCanvas();
@@ -71,7 +72,7 @@ export class MapDisplayComponent implements OnInit {
     this.characterMapService.getCurrentMapObserable().subscribe({
       next: (newCharMap) => {
         this.currentCharMap = newCharMap;
-        this.canvasContents = new Array<{ x: number, y: number, image: HTMLImageElement }>();
+        this.canvasContents = new Array<MapDrawable>();
         this.cleanCanvas();
         this.addCharMapImages();
         this.updateCanvas();
@@ -81,7 +82,6 @@ export class MapDisplayComponent implements OnInit {
 
   cleanCanvas() {
     const context = this.canvas.getContext('2d');
-
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
@@ -149,41 +149,45 @@ export class MapDisplayComponent implements OnInit {
 
   addCharMapImages(): any {
 
+    this.addBackgroundImage();
+  }
+
+  private addBackgroundImage() {
     const mapBackground = new Image();
-
     mapBackground.src = this.currentCharMap.mapImage;
-
-    this.canvasContents.push(
-      {
-        x: 0,
-        y: 0,
-        image: mapBackground
-      }
-    );
-
     mapBackground.onload = () => {
       this.canvas.getContext('2d').drawImage(mapBackground, 0, 0);
+      this.canvasContents.push({
+        x: 0,
+        y: 0,
+        image: mapBackground,
+        height: mapBackground.height,
+        width: mapBackground.width,
+        cityName: mapBackground.src
+      });
     };
   }
 
   onCityClicked(city: CharMapCity) {
     const cityIcon = new Image();
 
-    cityIcon.src = 'https://banner2.kisspng.com/20180329/yiq/kisspng-computer-icons-location-symbol-map-clip-art-location-5abc97a1cb8bf6.0992497615223090258337.jpg';
+    cityIcon.src = 'https://image.flaticon.com/icons/svg/67/67347.svg';
 
-    cityIcon.width = 5;
-    cityIcon.height = 5;
+    const cityCanvasContent = {
+      x: this.mapPositionDuringRightClick.x + this.rightClickPosition.x,
+      y: this.mapPositionDuringRightClick.y + this.rightClickPosition.y,
+      image: cityIcon,
+      height: CITY_ICON_HEIGHT,
+      width: CITY_ICON_WIDTH,
+      cityName: city.name
+    };
 
     this.canvasContents.push(
-      {
-        x: this.mapPositionDuringRightClick.x + this.rightClickPosition.x,
-        y: this.mapPositionDuringRightClick.y + this.rightClickPosition.y,
-        image: cityIcon
-      }
+      cityCanvasContent
     );
 
     cityIcon.onload = () => {
-      this.canvas.getContext('2d').drawImage(cityIcon, 0, 0, CITY_ICON_WIDTH, CITY_ICON_HEIGHT);
+      this.canvas.getContext('2d').drawImage(cityIcon, cityCanvasContent.x - cityCanvasContent.width / 2, cityCanvasContent.y - cityCanvasContent.height, CITY_ICON_WIDTH, CITY_ICON_HEIGHT);
     };
 
     this.hideContextMenu();
