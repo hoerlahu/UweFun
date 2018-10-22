@@ -4,17 +4,3 @@
     margin: 5,5,5,5;
     background-color: aqua;
 }
-
-.list-entry{
-    width:  200px;
-    height: 50px;
-    margin: 5,5,5,5;
-    background-color: rgb(25, 255, 140);
-}
-
-.list-group{
-    max-height: 300px;
-    margin-bottom: 10px;
-    overflow:scroll;
-    -webkit-overflow-scrolling: touch;
-}

@@ -2,6 +2,10 @@ import { callbackify } from 'util';
 import { CharacterMap } from './../CharacterMap';
 import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit, HostListener, ApplicationRef } from '@angular/core';
+import { CharMapCity } from '../CharMapCity';
+
+const CITY_ICON_HEIGHT = 2;
+const CITY_ICON_WIDTH = 2;
 
 @Component({
   selector: 'app-map-display',
@@ -12,17 +16,48 @@ export class MapDisplayComponent implements OnInit {
   mouseCurrentlyDown: boolean;
   canvas: HTMLCanvasElement;
 
+  contextMenu: HTMLDivElement;
+
   currentCharMap: CharacterMap = new CharacterMap();
 
   canvasContents: Array<{ x: number, y: number, image: HTMLImageElement }> = new Array<{ x: number, y: number, image: HTMLImageElement }>();
   lastMousePosition: { x: number, y: number } = { x: 0, y: 0 };
 
-
+  mapPositionDuringRightClick: { x: number, y: number } = { x: 0, y: 0 };
+  rightClickPosition: { x: number, y: number } = { x: 0, y: 0 };
   constructor(private characterMapService: CharacterMapService) { }
 
   ngOnInit() {
     this.initializeCanvas();
     this.fetchCharMap();
+    this.overrideRightClick();
+    this.findContextMenuDiv();
+  }
+
+  findContextMenuDiv(): any {
+    this.contextMenu = <HTMLDivElement>document.getElementById('contextMenu');
+    this.hideContextMenu();
+  }
+
+  hideContextMenu() {
+    this.contextMenu.setAttribute('style', 'position: absolute; left: -9999px');
+    this.mapPositionDuringRightClick.x = 0;
+    this.mapPositionDuringRightClick.y = 0;
+  }
+
+  showContextMenu(event: MouseEvent) {
+    this.contextMenu.setAttribute('style', 'position: fixed; left: ' + event.x + 'px; top: ' + event.y + 'px;');
+    this.mapPositionDuringRightClick = this.canvasContents[0];
+    const rect = this.canvas.getBoundingClientRect();
+    this.rightClickPosition.x = event.x - rect.left;
+    this.rightClickPosition.y = event.y - rect.top;
+  }
+
+  private overrideRightClick() {
+    this.canvas.oncontextmenu = (ev: MouseEvent) => {
+      ev.preventDefault();
+      this.showContextMenu(ev);
+    }
   }
 
   private fetchCharMap() {
@@ -129,6 +164,29 @@ export class MapDisplayComponent implements OnInit {
     mapBackground.onload = () => {
       this.canvas.getContext('2d').drawImage(mapBackground, 0, 0);
     };
+  }
+
+  onCityClicked(city: CharMapCity) {
+    const cityIcon = new Image();
+
+    cityIcon.src = 'https://banner2.kisspng.com/20180329/yiq/kisspng-computer-icons-location-symbol-map-clip-art-location-5abc97a1cb8bf6.0992497615223090258337.jpg';
+
+    cityIcon.width = 5;
+    cityIcon.height = 5;
+
+    this.canvasContents.push(
+      {
+        x: this.mapPositionDuringRightClick.x + this.rightClickPosition.x,
+        y: this.mapPositionDuringRightClick.y + this.rightClickPosition.y,
+        image: cityIcon
+      }
+    );
+
+    cityIcon.onload = () => {
+      this.canvas.getContext('2d').drawImage(cityIcon, 0, 0, CITY_ICON_WIDTH, CITY_ICON_HEIGHT);
+    };
+
+    this.hideContextMenu();
   }
 
 }

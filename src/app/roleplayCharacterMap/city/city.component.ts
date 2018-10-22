@@ -4,6 +4,7 @@ import { CharacterMap } from '../CharacterMap';
 import { CharacterMapService } from 'src/app/character-map.service';
 import { Router } from '@angular/router';
 import { ShouldEditCharMapService } from '../should-edit-char-map.service';
+import { RedrawService } from 'src/app/redraw.service';
 
 @Component({
   selector: 'app-city',
@@ -15,21 +16,29 @@ export class CityComponent implements OnInit {
   charMap: CharacterMap = new CharacterMap();
   newCharacter = false;
   city: CharMapCity;
-  isEditable:boolean;
+  isEditable: boolean;
 
   constructor(private charMapService: CharacterMapService,
-              private router: Router,
-              private shouldEditService: ShouldEditCharMapService) { }
+    private router: Router,
+    private shouldEditService: ShouldEditCharMapService,
+    private redrawService: RedrawService) { }
 
   ngOnInit() {
     const arr = this.router.url.split('/');
-    this.charMapService.getMap(arr[arr.length - 1 ]).then(
+    this.charMapService.getMap(arr[arr.length - 1]).then(
       (resolve) => {
         this.charMap = resolve;
+        this.redrawService.redraw();
       });
 
-    this.charMapService.getMapObservable(arr[arr.length - 1 ]).subscribe(
-      { next: (next) => { this.charMap = next; }}
+    this.charMapService.getMapObservable(arr[arr.length - 1]).subscribe(
+      {
+        next:
+          (next) => {
+            this.charMap = next;
+            this.redrawService.redraw();
+          }
+      }
     );
 
     this.isEditable = this.shouldEditService.getInEditMode();

@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { CharacterMap } from '../CharacterMap';
 import { Router } from '@angular/router';
 import { ShouldEditCharMapService } from '../should-edit-char-map.service';
+import { RedrawService } from 'src/app/redraw.service';
 
 @Component({
   selector: 'app-character',
@@ -19,17 +20,24 @@ export class CharacterComponent implements OnInit {
 
   constructor(private charMapService: CharacterMapService,
     private router: Router,
-    private shouldEditService: ShouldEditCharMapService) { }
+    private shouldEditService: ShouldEditCharMapService,
+    private redrawService: RedrawService) { }
 
   ngOnInit() {
     const arr = this.router.url.split('/');
     this.charMapService.getMap(arr[arr.length - 1]).then(
       (resolve) => {
         this.charMap = resolve;
+        this.redrawService.redraw();
       });
 
     this.charMapService.getMapObservable(arr[arr.length - 1]).subscribe(
-      { next: (next) => { this.charMap = next; } }
+      {
+        next: (next) => {
+          this.charMap = next;
+          this.redrawService.redraw();
+        }
+      }
     );
 
     this.isEditable = this.shouldEditService.getInEditMode();

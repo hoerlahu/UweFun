@@ -5,7 +5,7 @@
 
 <quill-editor id="description-editor" (ngModelChange)="onPropertyChanged()" [(ngModel)]="charMap.description"></quill-editor>
 <br>
-Url of Map Image: <input type="text" (change)="onPropertyChanged()" [(ngModel)]="charMap.mapImage">
+Map Image: <input type="file" (change)="onMapImageChanged($event); onPropertyChanged()">
 
 <app-character></app-character>
 <app-city></app-city>

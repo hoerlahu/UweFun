@@ -53,7 +53,6 @@ export class EditCharacterMapComponent implements OnInit {
       {
         next: (next) => {
           this.charMap = next;
-          console.log(this.charMap.description);
           this.redraw();
         }
       }
@@ -81,6 +80,20 @@ export class EditCharacterMapComponent implements OnInit {
 
   onEditClicked(){
     this.shouldEditService.setInEditMode(true);
+  }
+
+  onMapImageChanged(event: Event) {
+    const inputField = <HTMLInputElement>event.target;
+    if (inputField.files[0]) {
+      const reader = new FileReader();
+      reader.readAsDataURL(inputField.files[0]);
+      reader.onload = (ev) => {
+        const dataUrl = (<FileReader>ev.target).result;
+        this.charMap.mapImage = dataUrl.toString();
+        this.redraw();
+        this.onPropertyChanged();
+      }
+    }
   }
 
 }
