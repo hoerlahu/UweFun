@@ -3,24 +3,27 @@ import { Injectable, NgZone } from '@angular/core';
 import { PersistanceService } from './persistance.service';
 import { Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { HashGenerator } from './helper/HashGenerator';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CharacterMapService {
-
   existingCharacterMaps: Array<CharacterMap> = new Array<CharacterMap>();
   existingCharacterMapsSubject: Subject<Array<CharacterMap>> = new Subject<Array<CharacterMap>>();
 
 
   constructor(private persistanceService: PersistanceService,
-              private router: Router,
-              private ngZone: NgZone) {
+    private router: Router,
+    private ngZone: NgZone) {
     this.persistanceService.read('scenario', (dataSnapshot) => {
       this.existingCharacterMaps = JSON.parse(dataSnapshot);
       if (!this.existingCharacterMaps) {
         this.existingCharacterMaps = new Array<CharacterMap>();
       }
+
+      this.loadAndReplaceHashedImages(this.existingCharacterMaps);
+
       this.existingCharacterMapsSubject.next(this.existingCharacterMaps);
     });
   }
@@ -90,7 +93,27 @@ export class CharacterMapService {
   }
 
   persistMaps() {
-    this.persistanceService.write('scenario', JSON.stringify(this.existingCharacterMaps));
+
+    let charMaps = this.existingCharacterMaps.slice();
+
+    this.saveAndReplaceImagesWithHash(charMaps);
+
+    this.persistanceService.write('scenario', JSON.stringify(charMaps));
+  }
+
+  saveAndReplaceImagesWithHash(characterMaps: CharacterMap[]): any {
+
+    characterMaps.forEach(
+      each => {
+        const hash = HashGenerator.calculateHashForString(each.mapImage);
+        this.persistanceService.write('ImageHashes/' + hash, each.mapImage);
+        localStorage.setItem('ImageHashes/' + hash, each.mapImage)
+        each.mapImage = hash.toString();
+      }
+    );
+
+
+
   }
 
   getMap(mapName: string): Promise<CharacterMap> {
@@ -120,4 +143,29 @@ export class CharacterMapService {
       );
     });
   }
+
+
+  loadAndReplaceHashedImages(charMaps: Array<CharacterMap>): void {
+    charMaps.forEach(element => {
+      if (this.successfullyLoadImageFromLocalStorage(element)) {
+        this.propagateChangeInCharMaps();
+      } else {
+        this.persistanceService.readOnce('ImageHashes/' + element.mapImage).then(
+          value => {
+            element.mapImage = value.val();
+            this.propagateChangeInCharMaps();
+          });
+      }
+    });
+  }
+
+  successfullyLoadImageFromLocalStorage(element: CharacterMap): boolean {
+    const answer = localStorage.getItem('ImageHashes/' + element.mapImage)
+    if (answer) { 
+      element.mapImage = answer;
+      return true;
+    }
+    return false;
+  }
 }
+
