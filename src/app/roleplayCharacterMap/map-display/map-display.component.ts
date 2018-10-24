@@ -4,6 +4,8 @@ import { CharacterMapService } from './../../character-map.service';
 import { Component, OnInit, HostListener, ApplicationRef } from '@angular/core';
 import { CharMapCity } from '../CharMapCity';
 import { MapDrawable } from './MapDrawable';
+import { HashGenerator } from 'src/app/helper/HashGenerator';
+import { ShouldEditCharMapService } from '../should-edit-char-map.service';
 
 const CITY_ICON_HEIGHT = 100;
 const CITY_ICON_WIDTH = 100;
@@ -26,9 +28,20 @@ export class MapDisplayComponent implements OnInit {
 
   mapPositionDuringRightClick: { x: number, y: number } = { x: 0, y: 0 };
   rightClickPosition: { x: number, y: number } = { x: 0, y: 0 };
-  constructor(private characterMapService: CharacterMapService) { }
+  isEditable: boolean;
+
+  constructor(private characterMapService: CharacterMapService,
+    private editableService: ShouldEditCharMapService) { }
 
   ngOnInit() {
+
+    this.isEditable = this.editableService.getInEditMode();
+    this.editableService.getIsInEditModeSubject().subscribe(
+      next => {
+        this.isEditable = next;
+      }
+    );
+
     this.initializeCanvas();
     this.fetchCharMap();
     this.overrideRightClick();
@@ -99,14 +112,19 @@ export class MapDisplayComponent implements OnInit {
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent) {
-    if (!this.isClickOnCanvas(event)) { return; }
+    if (event.button == 0) {
+      if(this.isClickOnElement(event, this.contextMenu) == false){
+        this.hideContextMenu();
+      }
+    } 
+    if (!this.isClickOnElement(event, this.canvas)) { return; }
     this.mouseCurrentlyDown = true;
     this.lastMousePosition.x = event.x;
     this.lastMousePosition.y = event.y;
   }
 
-  isClickOnCanvas(event: MouseEvent): boolean {
-    const rect = this.canvas.getBoundingClientRect();
+  isClickOnElement(event: MouseEvent, htmlElement: HTMLElement): boolean {
+    const rect = htmlElement.getBoundingClientRect();
     if (rect.left > event.x || rect.right < event.x) {
       return false;
     }
@@ -154,13 +172,14 @@ export class MapDisplayComponent implements OnInit {
   }
 
   onCityClicked(city: CharMapCity) {
+    console.log('happens');
     const cityIcon = new Image();
 
     cityIcon.src = 'https://image.flaticon.com/icons/svg/67/67347.svg';
 
     const cityCanvasContent = {
-      x: this.rightClickPosition.x - this.mapPositionDuringRightClick.x - CITY_ICON_WIDTH / 2,
-      y: this.rightClickPosition.y - this.mapPositionDuringRightClick.y - CITY_ICON_HEIGHT,
+      x: this.rightClickPosition.x - CITY_ICON_WIDTH / 2,
+      y: this.rightClickPosition.y - CITY_ICON_HEIGHT,
       image: cityIcon,
       height: CITY_ICON_HEIGHT,
       width: CITY_ICON_WIDTH,
@@ -181,7 +200,7 @@ export class MapDisplayComponent implements OnInit {
   }
 
   removeCityIconIfExists(name: string): void {
-    
+
     let remove;
 
     this.canvasContents.forEach((each) => {
@@ -190,9 +209,10 @@ export class MapDisplayComponent implements OnInit {
       }
     });
 
-    if( remove ) {
+    if (remove) {
       this.canvasContents.splice(this.canvasContents.indexOf(remove));
     }
+
   }
 
   hideContextMenu() {
@@ -202,8 +222,14 @@ export class MapDisplayComponent implements OnInit {
   }
 
   showContextMenu(event: MouseEvent) {
+
+    if (this.isEditable == false) { 
+      return; 
+    }
+
     this.contextMenu.setAttribute('style', 'position: fixed; left: ' + event.x + 'px; top: ' + event.y + 'px;');
-    this.mapPositionDuringRightClick = this.canvasContents[0];
+    this.mapPositionDuringRightClick.x = this.canvasContents[0].x;
+    this.mapPositionDuringRightClick.y = this.canvasContents[0].y;
     const rect = this.canvas.getBoundingClientRect();
     this.rightClickPosition.x = event.x - rect.left;
     this.rightClickPosition.y = event.y - rect.top;

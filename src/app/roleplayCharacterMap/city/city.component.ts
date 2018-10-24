@@ -48,8 +48,14 @@ export class CityComponent implements OnInit {
   }
 
   onCityEdit(city: CharMapCity) {
+    if(this.city && city.name == this.city.name){
+      this.city = null; 
+      this.redrawService.redraw();
+      return;
+    }
     this.city = city;
     this.newCharacter = city.name == null;
+    this.redrawService.redraw();
   }
 
   onNewCity() {

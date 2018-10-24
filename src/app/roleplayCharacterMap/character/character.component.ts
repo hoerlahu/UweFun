@@ -57,6 +57,7 @@ export class CharacterComponent implements OnInit {
       this.character = character;
       this.newCharacter = character.name == null;
     }
+    this.redrawService.redraw();
   }
 
   onNewCharacter() {

@@ -147,13 +147,10 @@ export class CharacterMapService {
 
   loadAndReplaceHashedImages(charMaps: Array<CharacterMap>): void {
     charMaps.forEach(element => {
-      if (this.successfullyLoadImageFromLocalStorage(element)) {
-        this.propagateChangeInCharMaps();
-      } else {
+      if ( !this.successfullyLoadImageFromLocalStorage(element)) {
         this.persistanceService.readOnce('ImageHashes/' + element.mapImage).then(
           value => {
             element.mapImage = value.val();
-            this.propagateChangeInCharMaps();
           });
       }
     });

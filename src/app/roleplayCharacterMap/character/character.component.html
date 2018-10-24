@@ -4,7 +4,6 @@
   <li *ngIf="isEditable" class="createNew" (click)="onNewCharacter()">create new Character</li>
 </ul>
 
-
 <div *ngIf="character">
   <div *ngIf="newCharacter == false; else enterCharName">
     <p>
@@ -22,7 +21,8 @@
   <div *ngIf="isEditable; else displayCityName" class="row">
     <div class="col">
       <div ngbDropdown class="d-inline-block">
-        City: {{character.inCityWithName}} <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
+        City: {{character.inCityWithName}} <button class="btn btn-outline-primary" id="dropdownBasic1"
+          ngbDropdownToggle>Toggle dropdown</button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
           <button *ngFor="let city of charMap.cities" class="dropdown-item" (click)="onCityWithNamePicked(city.name)">{{city.name}}</button>
         </div>
