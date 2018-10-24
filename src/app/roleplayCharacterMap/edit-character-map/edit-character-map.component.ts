@@ -45,7 +45,6 @@ export class EditCharacterMapComponent implements OnInit {
     this.charMapService.getCurrentMap().then(
       (resolve) => {
         this.charMap = resolve;
-        console.log(this.charMap.description);
         this.redraw();
       });
 

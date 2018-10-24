@@ -62,6 +62,7 @@ export class MapDisplayComponent implements OnInit {
 
   private fetchCharMap() {
     this.characterMapService.getCurrentMap().then((charMap) => {
+      this.preventAddingImagesThatAreCurrentlyLoading();
       this.currentCharMap = charMap;
       this.canvasContents = new Array<MapDrawable>();
       this.cleanCanvas();
@@ -70,6 +71,7 @@ export class MapDisplayComponent implements OnInit {
     });
     this.characterMapService.getCurrentMapObserable().subscribe({
       next: (newCharMap) => {
+        this.preventAddingImagesThatAreCurrentlyLoading();
         this.currentCharMap = newCharMap;
         this.canvasContents = new Array<MapDrawable>();
         this.cleanCanvas();
@@ -77,6 +79,10 @@ export class MapDisplayComponent implements OnInit {
         this.updateCanvas();
       }
     });
+  }
+
+  private preventAddingImagesThatAreCurrentlyLoading() {
+    this.canvasContents.forEach(each => { each.image.onload = () => {} });
   }
 
   cleanCanvas() {
@@ -158,21 +164,20 @@ export class MapDisplayComponent implements OnInit {
   private addBackgroundImage() {
     const mapBackground = new Image();
     mapBackground.src = this.currentCharMap.mapImage;
+    this.canvasContents.push({
+      x: 0,
+      y: 0,
+      image: mapBackground,
+      height: mapBackground.height,
+      width: mapBackground.width,
+      cityName: mapBackground.src
+    });
     mapBackground.onload = () => {
       this.canvas.getContext('2d').drawImage(mapBackground, 0, 0);
-      this.canvasContents.push({
-        x: 0,
-        y: 0,
-        image: mapBackground,
-        height: mapBackground.height,
-        width: mapBackground.width,
-        cityName: mapBackground.src
-      });
     };
   }
 
   onCityClicked(city: CharMapCity) {
-    console.log('happens');
     const cityIcon = new Image();
 
     cityIcon.src = 'https://image.flaticon.com/icons/svg/67/67347.svg';
