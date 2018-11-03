@@ -165,7 +165,6 @@ export class MapDisplayComponent implements OnInit {
   private addBackgroundImage() {
     const mapBackground = new Image();
     mapBackground.src = this.currentCharMap.mapImage;
-    console.log(mapBackground.width + " " + mapBackground.height + " " + mapBackground.src);
     mapBackground.onload = () => {
       this.canvas.getContext('2d').drawImage(mapBackground, 0, 0);
       this.canvasContents.push({
