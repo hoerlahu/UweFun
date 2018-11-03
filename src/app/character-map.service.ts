@@ -152,7 +152,8 @@ export class CharacterMapService {
           value => {
             element.mapImage = value.val();
           });
-      }
+        element.mapImage = CharacterMap.DEFAULT_MAP_IMAGE;
+        }
     });
   }
 

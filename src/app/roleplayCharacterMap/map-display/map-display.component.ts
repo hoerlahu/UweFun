@@ -95,6 +95,7 @@ export class MapDisplayComponent implements OnInit {
     this.canvasContents.forEach((each) => {
       context.drawImage(each.image, each.x, each.y, each.width, each.height);
     });
+    let val = this.canvasContents[0];
   }
 
   @HostListener('mousemove', ['$event'])
@@ -164,16 +165,17 @@ export class MapDisplayComponent implements OnInit {
   private addBackgroundImage() {
     const mapBackground = new Image();
     mapBackground.src = this.currentCharMap.mapImage;
-    this.canvasContents.push({
-      x: 0,
-      y: 0,
-      image: mapBackground,
-      height: mapBackground.height,
-      width: mapBackground.width,
-      cityName: mapBackground.src
-    });
+    console.log(mapBackground.width + " " + mapBackground.height + " " + mapBackground.src);
     mapBackground.onload = () => {
       this.canvas.getContext('2d').drawImage(mapBackground, 0, 0);
+      this.canvasContents.push({
+        x: 0,
+        y: 0,
+        image: mapBackground,
+        height: mapBackground.height,
+        width: mapBackground.width,
+        cityName: mapBackground.src
+      });
     };
   }
 
